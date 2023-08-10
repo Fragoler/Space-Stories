@@ -2,12 +2,11 @@
   id: StoriesDefaultMapPool
   maps:
   - CorvaxDelta
-  - CorvaxBox
   - CorvaxAvrite
   - StoriesDelta
-  - StoriesAspid
-  - StoriesDelta
-  - StoriesOrigin
+  #- StoriesAspid
+  - StoriesFland
+  #- StoriesOrigin
   - Aspid
   - Bagel
   - Barratry
