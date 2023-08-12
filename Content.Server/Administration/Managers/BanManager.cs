@@ -206,7 +206,9 @@ public sealed class BanManager : IBanManager, IPostInjectInit
 
         if (targetUsername == null) return;
 
-        var payload = GeneratePayload(adminName, targetUsername, expiresString, TimeString, reason);
+        if (_webhookUrl == string.Empty) return;
+
+        var payload = GeneratePayload(adminName, targetUsername, expiresString, TimeString, reason, banDef.Id);
 
         var request = await _httpClient.PostAsync($"{_webhookUrl}?wait=true",
             new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
@@ -321,8 +323,9 @@ public sealed class BanManager : IBanManager, IPostInjectInit
         _sawmill = _logManager.GetSawmill(SawmillId);
     }
 
-    private WebhookPayload GeneratePayload(string adminName, string targetName, string expiresString, string time, string reason)
+    private WebhookPayload GeneratePayload(string adminName, string targetName, string expiresString, string time, string reason, int? id)
     {
+        if (id == null) id = 0000;
         var round = "Раунд: #0000";
         if ((_systems.TryGetEntitySystem<GameTicker>(out var ticker)))
             round = ticker.RunLevel switch
@@ -351,7 +354,7 @@ public sealed class BanManager : IBanManager, IPostInjectInit
                 {
                     new()
                     {
-                        Description = $"> **Выдан:** ``{targetName}``\n> **Выдал:** ``{adminName}``\n\n> **Выдан:** {DateTimeOffset.Now}\n> **Истечет:** {expiresString}\n> **Длительность:** {time}\n\n> **Причина:** { reason }",
+                        Description = $"> **ID:** {id}\n\n> **Нарушитель:** ``{targetName}``\n> **Администратор:** ``{adminName}``\n\n> **Выдан:** {DateTimeOffset.Now}\n> **Истечет:** {expiresString}\n> **Длительность:** {time}\n\n> **Причина:** { reason }",
                         Color = 0xFF0000,
                         Author = new EmbedAuthor
                         {
