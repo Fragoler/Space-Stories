@@ -16,6 +16,26 @@ using Robust.Shared.Configuration;
 using Robust.Shared.Enums;
 using Robust.Shared.Network;
 using Robust.Shared.Prototypes;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Content.Server.Administration.Managers;
+using Content.Server.GameTicking;
+using Content.Server.Players;
+using Content.Shared.Administration;
+using Content.Shared.CCVar;
+using JetBrains.Annotations;
+using Robust.Server.Player;
+using Robust.Shared;
+using Robust.Shared.Configuration;
+using Robust.Shared.Enums;
+using Robust.Shared.Network;
+using Robust.Shared.Utility;
 
 namespace Content.Server.Administration.Managers;
 
@@ -30,11 +50,15 @@ public sealed class BanManager : IBanManager, IPostInjectInit
     [Dependency] private readonly IChatManager _chat = default!;
     [Dependency] private readonly INetManager _netManager = default!;
     [Dependency] private readonly ILogManager _logManager = default!;
+    [Dependency] private readonly IConfigurationManager _config = default!;
 
     private ISawmill _sawmill = default!;
+    private readonly HttpClient _httpClient = new();
 
     public const string SawmillId = "admin.bans";
     public const string JobPrefix = "Job:";
+    private string _webhookUrl = string.Empty; // SpaceStories ban track
+    private WebhookData? _webhookData;
 
     private readonly Dictionary<NetUserId, HashSet<ServerRoleBanDef>> _cachedRoleBans = new();
 
@@ -43,6 +67,7 @@ public sealed class BanManager : IBanManager, IPostInjectInit
         _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
 
         _netManager.RegisterNetMessage<MsgRoleBans>();
+        _config.OnValueChanged(CCVars.DiscordBanWebhook, OnWebhookChanged, true); // SpaceStories ban track
     }
 
     private async void OnPlayerStatusChanged(object? sender, SessionStatusEventArgs e)
@@ -151,6 +176,7 @@ public sealed class BanManager : IBanManager, IPostInjectInit
             ? string.Concat(hwid.Value.Select(x => x.ToString("x2")))
             : "null";
         var expiresString = expires == null ? Loc.GetString("server-ban-string-never") : $"{expires}";
+        var TimeString = minutes == null ? Loc.GetString("server-ban-string-infinity") : $"{TimeSpan.FromMinutes(minutes.Value)}";
 
         var key = _cfg.GetCVar(CCVars.AdminShowPIIOnBan) ? "server-ban-string" : "server-ban-string-no-pii";
 
@@ -177,6 +203,27 @@ public sealed class BanManager : IBanManager, IPostInjectInit
         // If they are, kick them
         var message = banDef.FormatBanMessage(_cfg, _localizationManager);
         targetPlayer.ConnectedClient.Disconnect(message);
+
+        if (targetUsername == null) return;
+
+        var payload = GeneratePayload(adminName, targetUsername, expiresString, TimeString, reason);
+
+        var request = await _httpClient.PostAsync($"{_webhookUrl}?wait=true",
+            new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"));
+
+        var content = await request.Content.ReadAsStringAsync();
+        if (!request.IsSuccessStatusCode)
+        {
+            _sawmill.Log(LogLevel.Error, $"Discord returned bad status code when posting message (perhaps the message is too long?): {request.StatusCode}\nResponse: {content}");
+            return;
+        }
+
+        var id = JsonNode.Parse(content)?["id"];
+        if (id == null)
+        {
+            _sawmill.Log(LogLevel.Error, $"Could not find id in json-content returned from discord webhook: {content}");
+            return;
+        }
     }
     #endregion
 
@@ -272,5 +319,160 @@ public sealed class BanManager : IBanManager, IPostInjectInit
     public void PostInject()
     {
         _sawmill = _logManager.GetSawmill(SawmillId);
+    }
+
+    private WebhookPayload GeneratePayload(string adminName, string targetName, string expiresString, string time, string reason)
+    {
+        var round = "Раунд: #0000";
+        if ((_systems.TryGetEntitySystem<GameTicker>(out var ticker)))
+            round = ticker.RunLevel switch
+            {
+                GameRunLevel.PreRoundLobby => ticker.RoundId == 0
+                    ? "Во время рестарта." // first round after server restart has ID == 0
+                    : $"Перед раундом: #{ticker.RoundId + 1}",
+                GameRunLevel.InRound => $"Раунд: #{ticker.RoundId}",
+                GameRunLevel.PostRound => $"После раунда: #{ticker.RoundId}",
+                _ => throw new ArgumentOutOfRangeException(nameof(ticker.RunLevel), $"{ticker.RunLevel} was not matched."),
+            };
+
+        var name = $"Времянный бан. {round}";
+
+        if (expiresString == "never")
+        {
+            expiresString = "Никогда";
+            time = "Вечно";
+            name = $"Перманентный бан. {round}";
+        }
+        return new WebhookPayload
+        {
+            Username = "Ban Machine",
+            AvatarUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCSDvjudwZh_G5qrZI5OrDNMLMmYzNBLYWP3Tl_cS_zQ&s",
+            Embeds = new List<Embed>
+                {
+                    new()
+                    {
+                        Description = $"> **Выдан:** ``{targetName}``\n> **Выдал:** ``{adminName}``\n\n> **Выдан:** {DateTimeOffset.Now}\n> **Истечет:** {expiresString}\n> **Длительность:** {time}\n\n> **Причина:** { reason }",
+                        Color = 0xFF0000,
+                        Author = new EmbedAuthor
+                        {
+                        Name = $"{name}",
+                        IconUrl = "https://cdn.discordapp.com/emojis/1129749368199712829.webp?size=40&quality=lossless"
+                        }
+        },
+                },
+        };
+    }
+
+    private void OnWebhookChanged(string url)
+    {
+        _webhookUrl = url;
+
+        if (url == string.Empty)
+            return;
+
+        // Basic sanity check and capturing webhook ID and token
+        var match = Regex.Match(url, @"^https://discord\.com/api/webhooks/(\d+)/((?!.*/).*)$");
+
+        if (!match.Success)
+        {
+            // TODO: Ideally, CVar validation during setting should be better integrated
+            _sawmill.Warning("Webhook URL does not appear to be valid. Using anyways...");
+            return;
+        }
+
+        if (match.Groups.Count <= 2)
+        {
+            _sawmill.Error("Could not get webhook ID or token.");
+            return;
+        }
+
+        var webhookId = match.Groups[1].Value;
+        var webhookToken = match.Groups[2].Value;
+
+        // Fire and forget
+        _ = SetWebhookData(webhookId, webhookToken);
+    }
+
+    private async Task SetWebhookData(string id, string token)
+    {
+        var response = await _httpClient.GetAsync($"https://discord.com/api/v10/webhooks/{id}/{token}");
+
+        var content = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+        {
+            _sawmill.Log(LogLevel.Error, $"Discord returned bad status code when trying to get webhook data (perhaps the webhook URL is invalid?): {response.StatusCode}\nResponse: {content}");
+            return;
+        }
+
+        _webhookData = JsonSerializer.Deserialize<WebhookData>(content);
+    }
+
+    // https://discord.com/developers/docs/resources/channel#embed-object-embed-structure
+    private struct Embed
+    {
+        [JsonPropertyName("description")]
+        public string Description { get; set; } = "";
+
+        [JsonPropertyName("color")]
+        public int Color { get; set; } = 0;
+
+        [JsonPropertyName("author")]
+        public EmbedAuthor? Author { get; set; } = null;
+
+        public Embed()
+        {
+        }
+    }
+
+    // https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
+    private struct EmbedAuthor
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [JsonPropertyName("icon_url")]
+        public string? IconUrl { get; set; }
+
+        public EmbedAuthor()
+        {
+        }
+    }
+
+    // https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-structure
+    private struct WebhookData
+    {
+        [JsonPropertyName("guild_id")]
+        public string? GuildId { get; set; } = null;
+
+        [JsonPropertyName("channel_id")]
+        public string? ChannelId { get; set; } = null;
+
+        public WebhookData()
+        {
+        }
+    }
+
+    // https://discord.com/developers/docs/resources/channel#message-object-message-structure
+    private struct WebhookPayload
+    {
+        [JsonPropertyName("username")]
+        public string Username { get; set; } = "";
+
+        [JsonPropertyName("avatar_url")]
+        public string? AvatarUrl { get; set; } = "";
+
+        [JsonPropertyName("embeds")]
+        public List<Embed>? Embeds { get; set; } = null;
+
+        [JsonPropertyName("allowed_mentions")]
+        public Dictionary<string, string[]> AllowedMentions { get; set; } =
+            new()
+            {
+                    { "parse", Array.Empty<string>() },
+            };
+
+        public WebhookPayload()
+        {
+        }
     }
 }
