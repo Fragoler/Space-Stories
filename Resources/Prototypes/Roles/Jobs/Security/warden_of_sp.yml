@@ -33,13 +33,12 @@
     jumpsuit: ClothingUniformJumpsuitHoSP
     back: ClothingBackpackSpacePrisonFilled
     shoes: ClothingShoesBootsJackSP
-    outerClothing: ClothingOuterCoatWardenAlt
+    outerClothing: ClothingOuterCoatHoSP
     eyes: ClothingEyesGlassesSpacePrison
-    head: ClothingHeadHatCapWardenAlt
     id: WardenOfSPPDA
     gloves: ClothingHandsGlovesCombat
     ears: ClothingHeadsetPrisonAlt
-    belt: ClothingBeltSecurityFilled
+    belt: ClothingBeltHoSPSheathFilled
   innerclothingskirt: ClothingUniformJumpskirtHoSP
   satchel: ClothingBackpackSatchelSpacePrisonFilled
   duffelbag: ClothingBackpackDuffelSpacePrisonFilled
