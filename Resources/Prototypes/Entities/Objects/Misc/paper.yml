@@ -352,6 +352,114 @@
     - state: folder-base
 
 - type: entity
+  id: BoxFolderMaroon #for SAT department
+  parent: BoxFolderBase
+  suffix: Maroon
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#800000"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderPurple #for R&D department
+  parent: BoxFolderBase
+  suffix: Purple
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#800080"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderOlive #for Cargo department
+  parent: BoxFolderBase
+  suffix: Olive
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#808000"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderChocolate #for Engineer department
+  parent: BoxFolderBase
+  suffix: Chocolate
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#D2691E"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderGreen #for Central Comand department
+  parent: BoxFolderBase
+  suffix: Green
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#008000"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderAquamarine #for Comand department
+  parent: BoxFolderBase
+  suffix: Aquamarine
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#7FFFD4"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderAqua #for Medical department
+  parent: BoxFolderBase
+  suffix: Aqua
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#00FFFF"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderDarkBlue #for Head Of Personal
+  parent: BoxFolderBase
+  suffix: DarkBlue
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#00008B"
+        - state: folder-base
+
+- type: entity
+  id: BoxFolderGreenYellow #for service department
+  parent: BoxFolderBase
+  suffix: GreenYellow
+  components:
+    - type: Sprite
+      sprite: Objects/Misc/bureaucracy.rsi
+      layers:
+        - state: folder-colormap
+          color: "#ADFF2F"
+        - state: folder-base
+
+- type: entity
   id: BoxFolderBlue
   parent: BoxFolderBase
   suffix: Blue
