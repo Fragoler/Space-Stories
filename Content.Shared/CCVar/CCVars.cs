@@ -317,6 +317,12 @@ namespace Content.Shared.CCVar
          */
 
         /// <summary>
+        /// URL of the Discord webhook which will relay all ban messages.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordBanWebhook =
+            CVarDef.Create("discord.ban_webhook", string.Empty, CVar.SERVERONLY);
+
+        /// <summary>
         /// URL of the Discord webhook which will relay all ahelp messages.
         /// </summary>
         public static readonly CVarDef<string> DiscordAHelpWebhook =
@@ -761,7 +767,7 @@ namespace Content.Shared.CCVar
         ///     Actual area may be larger, as it currently doesn't terminate mid neighbor finding. I.e., area may be that of a ~51 tile radius circle instead.
         /// </remarks>
         public static readonly CVarDef<int> ExplosionMaxArea =
-            CVarDef.Create("explosion.max_area", (int) 3.14f * 256 * 256, CVar.SERVERONLY);
+            CVarDef.Create("explosion.max_area", (int)3.14f * 256 * 256, CVar.SERVERONLY);
 
         /// <summary>
         ///     Upper limit on the number of neighbor finding steps for the explosion system neighbor-finding algorithm.
