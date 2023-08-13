@@ -14,3 +14,4 @@ chat-radio-syndicate = Синдикат
 chat-radio-prison = Тюрьма
 # not headset but whatever
 chat-radio-handheld = Портативный
+chat-radio-binary = Binary
