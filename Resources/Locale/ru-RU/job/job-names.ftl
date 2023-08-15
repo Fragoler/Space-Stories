@@ -54,6 +54,7 @@ job-name-senior-officer = инструктор СБ
 # Role timers - Make these alphabetical or I cut you
 JobAtmosphericTechnician = атмосферный техник
 JobBartender = бармен
+JobBorg = Borg
 JobBotanist = ботаник
 JobCaptain = капитан
 JobWardenSP = глава космической тюрьмы
