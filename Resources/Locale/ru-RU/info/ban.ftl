@@ -70,5 +70,38 @@ ban-panel-ip-hwid-tooltip = Leave empty and check the checkbox below to use last
 ban-panel-severity = Severity:
 # Ban string
 server-ban-string = { $admin } created a { $severity } severity server ban that expires { $expires } for [{ $name }, { $ip }, { $hwid }], with reason: { $reason }
-server-ban-string-never = never
+server-ban-string-never = Никогда
+server-ban-string-infinity = Вечно
+server-time-ban = Временный бан.
+server-perma-ban = Перманентный бан.
+server-role-ban = # Джоб-бан.
+server-time-ban-timestring =
+    { $hours } { $hours ->
+        [one] час
+        [few] часа
+       *[other] часов
+    }.
+server-time-ban-string = > **Раунд:** #{ $round }
+
+    > **Нарушитель:** ``{ $targetName }``
+    > **Администратор:** ``{ $adminName }``
+
+    > **Выдан:** { $TimeNow }
+    > **Истечет:** { $expiresString }
+    > **Длительность:** { $timeString }
+
+    > **Причина:** { $reason }
+server-role-ban-string = > **Раунд:** #{ $round }
+
+    > **Нарушитель:** ``{ $targetName }``
+    > **Администратор:** ``{ $adminName }``
+
+    > **Выдан:** { $TimeNow }
+    > **Истечет:** { $expiresString }
+    > **Длительность:** { $timeString }
+
+    > **Роль:** ``{ $role }``
+
+    > **Причина:** { $reason }
+server-ban-string-no-pii = { $admin } created a { $severity } severity server ban that expires { $expires } for { $name } with reason: { $reason }
 cmd-ban_exemption_get-arg-player = <player>

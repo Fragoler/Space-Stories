@@ -317,6 +317,12 @@ namespace Content.Shared.CCVar
          */
 
         /// <summary>
+        /// URL of the Discord webhook which will relay all ban messages.
+        /// </summary>
+        public static readonly CVarDef<string> DiscordBanWebhook =
+            CVarDef.Create("discord.ban_webhook", string.Empty, CVar.SERVERONLY);
+
+        /// <summary>
         /// URL of the Discord webhook which will relay all ahelp messages.
         /// </summary>
         public static readonly CVarDef<string> DiscordAHelpWebhook =
@@ -699,6 +705,24 @@ namespace Content.Shared.CCVar
         public static readonly CVarDef<int> AdminAlertExplosionMinIntensity =
             CVarDef.Create("admin.alert.explosion_min_intensity", 60, CVar.SERVERONLY);
 
+        /// <summary>
+        ///     Minimum particle accelerator strength to create an admin alert message.
+        /// </summary>
+        public static readonly CVarDef<int> AdminAlertParticleAcceleratorMinPowerState =
+            CVarDef.Create("admin.alert.particle_accelerator_min_power_state", 3, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Should the ban details in admin channel include PII? (IP, HWID, etc)
+        public static readonly CVarDef<bool> AdminShowPIIOnBan =
+            CVarDef.Create("admin.show_pii_onban", false, CVar.SERVERONLY);
+
+        /// <summary>
+        /// If an admin joins a round by reading up or using the late join button, automatically
+        /// de-admin them.
+        /// </summary>
+        public static readonly CVarDef<bool> AdminDeadminOnJoin =
+            CVarDef.Create("admin.deadmin_on_join", false, CVar.SERVERONLY);
+
         /*
          * Explosions
          */
@@ -743,7 +767,7 @@ namespace Content.Shared.CCVar
         ///     Actual area may be larger, as it currently doesn't terminate mid neighbor finding. I.e., area may be that of a ~51 tile radius circle instead.
         /// </remarks>
         public static readonly CVarDef<int> ExplosionMaxArea =
-            CVarDef.Create("explosion.max_area", (int) 3.14f * 256 * 256, CVar.SERVERONLY);
+            CVarDef.Create("explosion.max_area", (int)3.14f * 256 * 256, CVar.SERVERONLY);
 
         /// <summary>
         ///     Upper limit on the number of neighbor finding steps for the explosion system neighbor-finding algorithm.
@@ -923,6 +947,12 @@ namespace Content.Shared.CCVar
         /// <remarks> Disabled by default, superconduction is awful. </remarks>
         public static readonly CVarDef<bool> Superconduction =
             CVarDef.Create("atmos.superconduction", false, CVar.SERVERONLY);
+
+        /// <summary>
+        ///     Heat loss per tile due to radiation at 20 degC, in W.
+        /// </summary>
+        public static readonly CVarDef<float> SuperconductionTileLoss =
+            CVarDef.Create("atmos.superconduction_tile_loss", 30f, CVar.SERVERONLY);
 
         /// <summary>
         ///     Whether excited groups will be processed and created.
