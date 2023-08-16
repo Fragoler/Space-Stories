@@ -1,5 +1,5 @@
 - type: gameMapPool
-  id: CorvaxDefaultMapPoolTest
+  id: CorvaxDefaultMapPool
   maps:
   - CorvaxDelta
   - CorvaxBox
