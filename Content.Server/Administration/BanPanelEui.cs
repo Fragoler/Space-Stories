@@ -86,9 +86,9 @@ public sealed class BanPanelEui : BaseEui
             }
 
             if (hidInt == 0)
-                hidInt = (uint) (ipAddress.AddressFamily == AddressFamily.InterNetworkV6 ? 128 : 32);
+                hidInt = (uint)(ipAddress.AddressFamily == AddressFamily.InterNetworkV6 ? 128 : 32);
 
-            addressRange = (ipAddress, (int) hidInt);
+            addressRange = (ipAddress, (int)hidInt);
         }
 
         var targetUid = target is not null ? PlayerId : null;
@@ -123,6 +123,7 @@ public sealed class BanPanelEui : BaseEui
             {
                 _banManager.CreateRoleBan(targetUid, target, Player.UserId, addressRange, targetHWid, role, minutes, severity, reason, now);
             }
+            _banManager.WebhookUpdateRoleBans(targetUid, target, Player.UserId, addressRange, targetHWid, roles, minutes, severity, reason, now); // Space Stories Ban Webhook
             return;
         }
 

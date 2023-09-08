@@ -72,35 +72,52 @@ ban-panel-severity = Severity:
 server-ban-string = { $admin } created a { $severity } severity server ban that expires { $expires } for [{ $name }, { $ip }, { $hwid }], with reason: { $reason }
 server-ban-string-never = Никогда
 server-ban-string-infinity = Вечно
-server-time-ban = Временный бан.
-server-perma-ban = Перманентный бан.
-server-role-ban = # Джоб-бан.
-server-time-ban-timestring =
-    { $hours } { $hours ->
-        [one] час
-        [few] часа
-       *[other] часов
+server-ban-no-name = Не найдено. ({ $hwid })
+server-time-ban = Временный бан на { $mins } { $mins ->
+        [one] минуту
+        [few] минуты
+       *[other] минут
     }.
-server-time-ban-string = > **Раунд:** #{ $round }
-
+server-perma-ban = Перманентный бан.
+server-role-ban = Временный джоб-бан на { $mins } { $mins ->
+        [one] минуту
+        [few] минуты
+       *[other] минут
+    }.
+server-perma-role-ban = Перманентный джоб-бан.
+server-time-ban-string =
     > **Нарушитель:** ``{ $targetName }``
     > **Администратор:** ``{ $adminName }``
 
     > **Выдан:** { $TimeNow }
     > **Истечет:** { $expiresString }
-    > **Длительность:** { $timeString }
 
     > **Причина:** { $reason }
-server-role-ban-string = > **Раунд:** #{ $round }
+server-ban-footer = { $server } | Раунд: #{ $round }
+server-perma-ban-string =
+    > **Нарушитель:** ``{ $targetName }``
+    > **Администратор:** ``{ $adminName }``
 
+    > **Выдан:** { $TimeNow }
+
+    > **Причина:** { $reason }
+server-role-ban-string =
     > **Нарушитель:** ``{ $targetName }``
     > **Администратор:** ``{ $adminName }``
 
     > **Выдан:** { $TimeNow }
     > **Истечет:** { $expiresString }
-    > **Длительность:** { $timeString }
 
-    > **Роль:** ``{ $role }``
+    > **Роли:** { $roles }
+
+    > **Причина:** { $reason }
+server-perma-role-ban-string =
+    > **Нарушитель:** ``{ $targetName }``
+    > **Администратор:** ``{ $adminName }``
+
+    > **Выдан:** { $TimeNow }
+
+    > **Роли:** { $roles }
 
     > **Причина:** { $reason }
 server-ban-string-no-pii = { $admin } created a { $severity } severity server ban that expires { $expires } for { $name } with reason: { $reason }
