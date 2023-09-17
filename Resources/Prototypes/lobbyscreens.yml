@@ -1,1 +1,19 @@
-﻿
+﻿- type: lobbyBackground
+  id: Atmos
+  background: /Textures/SpaceStories/LobbyScreens/atmos.jpg
+
+- type: lobbyBackground
+  id: Botanic
+  background: /Textures/SpaceStories/LobbyScreens/botanic.jpg
+
+- type: lobbyBackground
+  id: Engineer
+  background: /Textures/SpaceStories/LobbyScreens/engineer.jpg
+
+- type: lobbyBackground
+  id: Lobby1
+  background: /Textures/SpaceStories/LobbyScreens/lobby1.jpg
+
+- type: lobbyBackground
+  id: MorePets
+  background: /Textures/SpaceStories/LobbyScreens/morepets.jpg
