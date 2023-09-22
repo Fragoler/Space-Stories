@@ -1,7 +1,7 @@
 - type: entity
   save: false
   name: Urisst' McVulpa
-  parent: BaseMobOrganic
+  parent: BaseMobSpeciesOrganic
   id: BaseMobVulpa
   abstract: true
   components:
@@ -57,7 +57,7 @@
 - type: entity
   save: false
   name: Urist McVulpa
-  parent: MobHumanDummy
+  parent: BaseSpeciesDummy
   id: MobVulpaDummy
   noSpawn: true
   description: A dummy vulpa meant to be used in character setup.

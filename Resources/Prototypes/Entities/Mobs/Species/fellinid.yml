@@ -1,6 +1,6 @@
 - type: entity
   name: Urist McFellinid
-  parent: BaseMobOrganic
+  parent: BaseMobSpeciesOrganic
   id: BaseMobFellinid
   abstract: true
   components:
@@ -18,5 +18,5 @@
 - type: entity
   name: Urist McHands
   id: MobFellinidDummy
-  parent: BaseMobOrganicDummy
+  parent: BaseSpeciesDummy
   noSpawn: true
